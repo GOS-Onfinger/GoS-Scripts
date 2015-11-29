@@ -210,4 +210,4 @@ Ekill = OlafMenu.Killsteal.EKill:Value()
 end
 
 if GetObjectName(myHero) == "Olaf" then Olaf() end
-PrintChat("<font color='#e3ff00'>Scaring - Olaf</font> <> <font color='#00d12d'>Loaded!</font>")
+PrintChat("<font color='#e3ff00'>Scaring - Olaf the Viking</font> <> <font color='#00d12d'>Loaded!</font>")
