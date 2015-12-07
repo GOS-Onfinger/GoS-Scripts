@@ -36,7 +36,7 @@ function Olaf:__init()
 		OlafMenu.Skinchange:Slider("SetSkin", "Skin ID", 0, 0, 5, 1)
 
   	OnTick(function(myHero) self:OnTick(myHero) end)
-  	OnDraw(function(myHero) self:OnDraw(myHero) end)
+  	--OnDraw(function(myHero) self:OnDraw(myHero) end)
 end
 
 function Olaf:OnTick()
@@ -56,9 +56,9 @@ function Olaf:OnTick()
 	self:Killsteal()
 end
 
-function Olaf:OnDraw()
-HeroSkinChanger(GetMyHero(),OlafMenu.Skinchange.SetSkin:Value())
-end
+--function Olaf:OnDraw()
+--HeroSkinChanger(GetMyHero(),OlafMenu.Skinchange.SetSkin:Value())
+--end
 
 function Olaf:Settings()
 	unit = GetCurrentTarget()
