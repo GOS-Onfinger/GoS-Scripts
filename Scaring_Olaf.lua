@@ -93,11 +93,9 @@ end
 function Olaf:Harass()
 	QHarass = OlafMenu.Harass.QHarass:Value()
 	EHarass = OlafMenu.Harass.EHarass:Value()
-
 	if QHarass and ValidTarget(unit, GetCastRange(myHero, _Q)+50) then
     	self:ThrollAxe(unit)
     end
-
     if EHarass and ValidTarget(unit, GetCastRange(myHero, _E)) then
 	    if CanUseSpell(myHero, _E) == READY then
 	    	CastTargetSpell(unit, _E)
@@ -133,10 +131,13 @@ function Olaf:Combo()
 end
 
 function Olaf:ThrollAxe(unit)
-	if ValidTarget(unit, GetCastRange(myHero, _Q)) and GetDistance(unit,myHero) < GetCastRange(myHero, _Q)+100 then
-		if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 then
-			CastSkillShot(_Q, QPred.PredPos.x, QPred.PredPos.y, QPred.PredPos.z)
-		end
+	if ValidTarget(unit, GetCastRange(myHero, _Q)) then
+    	local PredPos = Vector(QPred.PredPos)
+    	local HeroPos = Vector(myHero)
+    	local maxQRange = PredPos - (PredPos - HeroPos) * ( - 100 / GetDistance(QPred.PredPos))		
+          if CanUseSpell(myHero, _Q) == READY and QPred.HitChance == 1 then
+          	CastSkillShot3(_Q,HeroPos,maxQRange)
+          end
 	end
 end
 
