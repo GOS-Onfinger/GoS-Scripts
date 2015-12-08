@@ -10,30 +10,30 @@ function Olaf:__init()
 		OlafMenu.Combo:Boolean("useQ", "Use Q", true)
 		OlafMenu.Combo:Boolean("useW", "Use W", true)
 		OlafMenu.Combo:Boolean("useE", "Use E", true)
-		OlafMenu.Combo:Boolean("useR", "Use R", true)
+	--	OlafMenu.Combo:Boolean("useR", "Use R", true)
 		OlafMenu.Combo:Boolean("useItems", "Use Items", true)
 	OlafMenu:Menu("Harass", "Haras Setings")
 		OlafMenu.Harass:Boolean("QHarass", "Use Q", true)
-		OlafMenu.Harass:Boolean("WHarass", "Use W", true)
+	--	OlafMenu.Harass:Boolean("WHarass", "Use W", true)
 		OlafMenu.Harass:Boolean("EHarass", "Use E", true)
 	OlafMenu:Menu("LaneClear", "Lane Clear Setings")
 		OlafMenu.LaneClear:Boolean("QLaneClear", "Use Q", true)
-		OlafMenu.LaneClear:Slider("QMana", "if Mana % is More than", 30, 0, 100, 1)
+		OlafMenu.LaneClear:Slider("QMana", "if Mana % is More than", 80, 0, 100, 1)
 		OlafMenu.LaneClear:Boolean("WLaneClear", "Use W", true)
-		OlafMenu.LaneClear:Slider("WMana", "if Mana % is More than", 30, 0, 100, 1)
+		OlafMenu.LaneClear:Slider("WMana", "if Mana % is More than", 80, 0, 100, 1)
 		OlafMenu.LaneClear:Boolean("ELaneClear", "Use E", true)
-		OlafMenu.LaneClear:Slider("EMana", "if Mana % is More than", 30, 0, 100, 1)
+		OlafMenu.LaneClear:Slider("EMana", "if Mana % is More than", 80, 0, 100, 1)
 	OlafMenu:Menu("JungleClear", "Jungle Clear Setings")
 		OlafMenu.JungleClear:Boolean("QJungleClear", "Use Q", true)
 		OlafMenu.JungleClear:Slider("JMana", "if Mana % is More than", 30, 0, 100, 1)		
 	OlafMenu:Menu("Survival", "HP Regeneration")
 		OlafMenu.Survival:Boolean("WHPRegen", "Use W Heal", true)
-		OlafMenu.Survival:Slider("WHP", "if HP % is Less than", 30, 0, 100, 1)
+		OlafMenu.Survival:Slider("WHP", "if HP % is Less than", 80, 0, 100, 1)
 	OlafMenu:Menu("Killsteal", "Killsteal")
 		OlafMenu.Killsteal:Boolean("QKill", "Killsteal with Q", true)
 		OlafMenu.Killsteal:Boolean("EKill", "Killsteal with E", true)
-	OlafMenu:Menu("Skinchange", "Set Hero Skin")
-		OlafMenu.Skinchange:Slider("SetSkin", "Skin ID", 0, 0, 5, 1)
+	--OlafMenu:Menu("Skinchange", "Set Hero Skin")
+	--	OlafMenu.Skinchange:Slider("SetSkin", "Skin ID", 0, 0, 5, 1)
 
   	OnTick(function(myHero) self:OnTick(myHero) end)
   	--OnDraw(function(myHero) self:OnDraw(myHero) end)
@@ -62,6 +62,18 @@ end
 
 function Olaf:Settings()
 	unit = GetCurrentTarget()
+	uItems = OlafMenu.Combo.useItems:Value()
+	LNQ = OlafMenu.LaneClear.QLaneClear:Value()
+	LNW = OlafMenu.LaneClear.WLaneClear:Value()
+	LNE = OlafMenu.LaneClear.ELaneClear:Value()
+	QMana = OlafMenu.LaneClear.QMana:Value()
+	WMana = OlafMenu.LaneClear.WMana:Value()
+	EMana = OlafMenu.LaneClear.EMana:Value()
+	JCMana = OlafMenu.JungleClear.JMana:Value()
+	QHarass = OlafMenu.Harass.QHarass:Value()
+	EHarass = OlafMenu.Harass.EHarass:Value()
+	Qkill = OlafMenu.Killsteal.QKill:Value()
+	Ekill = OlafMenu.Killsteal.EKill:Value()
 	Hydra = GetItemSlot(myHero,3074)
 	Tiamat = GetItemSlot(myHero,3077)
 	Yommus = GetItemSlot(myHero,3142)
@@ -76,7 +88,6 @@ function Olaf:Settings()
 end
 
 function Olaf:useItems(unit)
-uItems = OlafMenu.Combo.useItems:Value()
 	if ValidTarget(unit, 400) then
 		if uItems and CanUseSpell(myHero, Hydra) == READY and Hydra ~= 0 and GetDistance(unit) < 300 then
 			CastSpell(Hydra)
@@ -91,9 +102,7 @@ uItems = OlafMenu.Combo.useItems:Value()
 end
 
 function Olaf:Harass()
-	QHarass = OlafMenu.Harass.QHarass:Value()
-	EHarass = OlafMenu.Harass.EHarass:Value()
-	if QHarass and ValidTarget(unit, GetCastRange(myHero, _Q)+50) then
+	if QHarass and ValidTarget(unit, GetCastRange(myHero, _Q)) then
     	self:ThrollAxe(unit)
     end
     if EHarass and ValidTarget(unit, GetCastRange(myHero, _E)) then
@@ -127,7 +136,7 @@ function Olaf:Combo()
 	    	DelayAction(function() CastTargetSpell(unit, _E) end, 10)
 	    end
   	end
-        self:useItems(unit)
+    self:useItems(unit)
 end
 
 function Olaf:ThrollAxe(unit)
@@ -142,12 +151,6 @@ function Olaf:ThrollAxe(unit)
 end
 
 function Olaf:LaneClear()
-LNQ = OlafMenu.LaneClear.QLaneClear:Value()
-LNW = OlafMenu.LaneClear.WLaneClear:Value()
-LNE = OlafMenu.LaneClear.ELaneClear:Value()
-QMana = OlafMenu.LaneClear.QMana:Value()
-WMana = OlafMenu.LaneClear.WMana:Value()
-EMana = OlafMenu.LaneClear.EMana:Value()
     for m, minion in pairs(minionManager.objects) do
 		local Mpred = GetPredictionForPlayer(GetOrigin(GetMyHero()), minion, GetMoveSpeed(minion), 2200,250,1300,80,false,false)
       	if GetTeam(minion) == MINION_ENEMY then
@@ -173,7 +176,6 @@ EMana = OlafMenu.LaneClear.EMana:Value()
 end 
 
 function Olaf:JungleClear()
-	JCMana = OlafMenu.JungleClear.JMana:Value()
     for j,jMob in pairs(minionManager.objects) do
     	local Jpred = GetPredictionForPlayer(GetOrigin(GetMyHero()), jMob, GetMoveSpeed(jMob), 2200,250,1300,80,false,false)
      	if GetTeam(jMob) == MINION_JUNGLE then
@@ -199,8 +201,6 @@ function Olaf:JungleClear()
 end
 
 function Olaf:Killsteal()
-Qkill = OlafMenu.Killsteal.QKill:Value()
-Ekill = OlafMenu.Killsteal.EKill:Value()
 	for i,unit in pairs(GetEnemyHeroes()) do
 		if Qkill and CanUseSpell(myHero,_Q) and ValidTarget(unit,GetCastRange(myHero,_Q)) and GetCurrentHP(unit) < getdmg("Q",unit,myHero,3) then 
 			CastSkillShot(_Q,QPred.PredPos.x,QPred.PredPos.y,QPred.PredPos.z)
