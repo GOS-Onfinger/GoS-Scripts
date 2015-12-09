@@ -32,6 +32,9 @@ function Olaf:__init()
 	OlafMenu:Menu("Killsteal", "Killsteal")
 		OlafMenu.Killsteal:Boolean("QKill", "Killsteal with Q", true)
 		OlafMenu.Killsteal:Boolean("EKill", "Killsteal with E", true)
+	OlafMenu:Menu("Misc", "Miscelaneous")
+	if Ignite ~= nil then OlafMenu.Misc:Boolean("Autoignite", "Auto Ignite", true) end
+		OlafMenu.Misc:Boolean("Autolvl", "Auto level", true)
 	--OlafMenu:Menu("Skinchange", "Set Hero Skin")
 	--	OlafMenu.Skinchange:Slider("SetSkin", "Skin ID", 0, 0, 5, 1)
 
@@ -54,6 +57,8 @@ function Olaf:OnTick()
 	end
 	self:Settings()
 	self:Killsteal()
+	self:Autolevel()
+	self:Autoignite()
 end
 
 --function Olaf:OnDraw()
@@ -207,6 +212,30 @@ function Olaf:Killsteal()
 		elseif Ekill and CanUseSpell(myHero,_E) and ValidTarget(unit,GetCastRange(myHero,_E)) and GetCurrentHP(unit) < getdmg("E",unit,myHero,3) then 
 			CastTargetSpell(unit, _E)
 		end
+	end
+end
+
+function Olaf:Autolevel()
+	if OlafMenu.Misc.Autolvl:Value() then  
+	  if GetLevel(myHero) > lastlevel then
+	    if Smite ~= nil then
+	    	leveltable = {_Q, _W, _E, _Q, _Q, _R, _Q, _E, _Q, _E, _R, _E, _E, _W, _W, _R, _W, _W}
+	    else 
+	    	leveltable = {_Q, _E, _W, _Q, _Q, _R, _Q, _E, _Q, _E, _R, _E, _E, _W, _W, _R, _W, _W}
+	    end
+	    DelayAction(function() LevelSpell(leveltable[GetLevel(myHero)]) end, math.random(1000,3000))
+	    lastlevel = GetLevel(myHero)
+	  end
+	end
+end
+
+function Olaf:Autoignite()
+    for i,enemy in pairs(GetEnemyHeroes()) do
+		if Ignite and OlafMenu.Misc.Autoignite:Value() then
+	          if IsReady(Ignite) and 20*GetLevel(myHero)+50 > GetHP(enemy)+GetHPRegen(enemy)*2.5 and ValidTarget(enemy, 600) then
+	          CastTargetSpell(enemy, Ignite)
+	          end
+	    end
 	end
 end
 
