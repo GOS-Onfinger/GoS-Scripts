@@ -34,7 +34,7 @@ function Olaf:__init()
 		OlafMenu.Killsteal:Boolean("EKill", "Killsteal with E", true)
 	OlafMenu:Menu("Misc", "Miscelaneous")
 	if Ignite ~= nil then OlafMenu.Misc:Boolean("Autoignite", "Auto Ignite", true) end
-		OlafMenu.Misc:Boolean("Autolvl", "Auto level", true)
+		OlafMenu.Misc:Boolean("Autolvl", "Auto level", false)
 	--OlafMenu:Menu("Skinchange", "Set Hero Skin")
 	--	OlafMenu.Skinchange:Slider("SetSkin", "Skin ID", 0, 0, 5, 1)
 
@@ -68,15 +68,7 @@ end
 function Olaf:Settings()
 	unit = GetCurrentTarget()
 	uItems = OlafMenu.Combo.useItems:Value()
-	LNQ = OlafMenu.LaneClear.QLaneClear:Value()
-	LNW = OlafMenu.LaneClear.WLaneClear:Value()
-	LNE = OlafMenu.LaneClear.ELaneClear:Value()
-	QMana = OlafMenu.LaneClear.QMana:Value()
-	WMana = OlafMenu.LaneClear.WMana:Value()
-	EMana = OlafMenu.LaneClear.EMana:Value()
-	JCMana = OlafMenu.JungleClear.JMana:Value()
-	QHarass = OlafMenu.Harass.QHarass:Value()
-	EHarass = OlafMenu.Harass.EHarass:Value()
+	lastlevel = GetLevel(myHero)-1
 	Qkill = OlafMenu.Killsteal.QKill:Value()
 	Ekill = OlafMenu.Killsteal.EKill:Value()
 	Hydra = GetItemSlot(myHero,3074)
@@ -94,9 +86,9 @@ end
 
 function Olaf:useItems(unit)
 	if ValidTarget(unit, 400) then
-		if uItems and CanUseSpell(myHero, Hydra) == READY and Hydra ~= 0 and GetDistance(unit) < 300 then
+		if uItems and CanUseSpell(myHero, Hydra) == READY and Hydra ~= 0 and GetDistance(unit) < 200 then
 			CastSpell(Hydra)
-		elseif uItems and CanUseSpell(myHero, Tiamat) == READY and Tiamat ~= 0 and GetDistance(unit) < 300 then
+		elseif uItems and CanUseSpell(myHero, Tiamat) == READY and Tiamat ~= 0 and GetDistance(unit) < 200 then
 			CastSpell(Tiamat)
 		elseif uItems and CanUseSpell(myHero, Bork) == READY and Bork ~= 0 then
 			CastTargetSpell(unit, Bork)
@@ -107,10 +99,10 @@ function Olaf:useItems(unit)
 end
 
 function Olaf:Harass()
-	if QHarass and ValidTarget(unit, GetCastRange(myHero, _Q)) then
+	if OlafMenu.Harass.QHarass:Value() and ValidTarget(unit, GetCastRange(myHero, _Q)) then
     	self:ThrollAxe(unit)
     end
-    if EHarass and ValidTarget(unit, GetCastRange(myHero, _E)) then
+    if OlafMenu.Harass.EHarass:Value() and ValidTarget(unit, GetCastRange(myHero, _E)) then
 	    if CanUseSpell(myHero, _E) == READY then
 	    	CastTargetSpell(unit, _E)
 	    end
@@ -126,21 +118,22 @@ function Olaf:Combo()
 		end
 	end
 
-	if ValidTarget(unit, GetCastRange(myHero, _Q)) then
-    	self:ThrollAxe(unit)
-    end
-
-    if ValidTarget(unit, GetCastRange(myHero,_W)) then
-		if CanUseSpell(myHero, _W) == READY then
-			DelayAction(function() CastSpell(_W) end, 5)
-		end
-	end
-
     if ValidTarget(unit, GetCastRange(myHero, _E)) then
 	    if CanUseSpell(myHero, _E) == READY then
 	    	DelayAction(function() CastTargetSpell(unit, _E) end, 10)
 	    end
   	end
+
+	if ValidTarget(unit, GetCastRange(myHero, _Q)) then
+    	DelayAction(function() self:ThrollAxe(unit) end, 20)
+    end
+
+    if ValidTarget(unit, GetCastRange(myHero,_W)) then
+		if CanUseSpell(myHero, _W) == READY then
+			DelayAction(function() CastSpell(_W) end, 30)
+		end
+	end
+
     self:useItems(unit)
 end
 
@@ -164,16 +157,16 @@ function Olaf:LaneClear()
 			elseif uItems and CanUseSpell(myHero, Tiamat) == READY and Tiamat ~= 0 then
 				CastSpell(Tiamat)
 			end
-	        if ValidTarget(minion, GetCastRange(myHero,_Q)) and myMana > QMana then
+	        if ValidTarget(minion, GetCastRange(myHero,_Q)) and myMana > OlafMenu.LaneClear.QMana:Value() then
 				MinionPos = GetOrigin(minion)
-					if CanUseSpell(myHero, _Q) == READY and LNQ then
+					if CanUseSpell(myHero, _Q) == READY and OlafMenu.LaneClear.QLaneClear:Value() then
 						CastSkillShot(_Q,MinionPos.x,MinionPos.y,MinionPos.z)
 					end
 	        end
-	        if LNW and IsReady(_W) and ValidTarget(minion, GetCastRange(myHero,_W)) and myMana > WMana and HPercentage < WHP then
+	        if OlafMenu.LaneClear.WLaneClear:Value() and IsReady(_W) and ValidTarget(minion, GetCastRange(myHero,_W)) and myMana > OlafMenu.LaneClear.WMana:Value() and HPercentage < WHP then
 	        	DelayAction(function() CastSpell(_W) end, 10)
 	        end
-	        if LNE and IsReady(_E) and ValidTarget(minion, GetCastRange(myHero,_E)) and myMana > EMana then
+	        if OlafMenu.LaneClear.ELaneClear:Value() and IsReady(_E) and ValidTarget(minion, GetCastRange(myHero,_E)) and myMana > OlafMenu.LaneClear.EMana:Value() then
 	            DelayAction(function() CastTargetSpell(minion,_E) end, 20)
 	        end
     	end
@@ -189,7 +182,7 @@ function Olaf:JungleClear()
 				elseif uItems and CanUseSpell(myHero, Tiamat) == READY and Tiamat ~= 0 then
 					CastSpell(Tiamat)
 				end
-			if ValidTarget(jMob, GetCastRange(myHero,_Q)) and myMana > JCMana then
+			if ValidTarget(jMob, GetCastRange(myHero,_Q)) and myMana > OlafMenu.JungleClear.JMana:Value() then
 				JungleMobPos = GetOrigin(jMob)	        
 				if CanUseSpell(myHero, _Q) == READY and OlafMenu.JungleClear.QJungleClear:Value() then
 					CastSkillShot(_Q,JungleMobPos.x,JungleMobPos.y,JungleMobPos.z)
