@@ -165,11 +165,11 @@ function Onwalker:GetTime()
 end
 
 function Onwalker:CanMove()
-	return (GetTickCount() + GetLatency() * 0.5 > lastAttack + lastWindUpTime + 20)
+	return (GetTickCount() + GetLatency() * 0.5 > self.lastAttack + self.lastWindUpTime + 20)
 end 
 
 function Onwalker:CanShoot()
-	return (GetTickCount() + GetLatency() * 0.5 > lastAttack + lastAttackCD)
+	return (GetTickCount() + GetLatency() * 0.5 > self.lastAttack + self.lastAttackCD)
 end 
 
 function Onwalker:MoveTo()
